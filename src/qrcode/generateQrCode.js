@@ -22,11 +22,11 @@ function createTempLinkFromBase64(base64String, tempDirectory) {
   return tempLink;
 }
 const getQrCodeFile = (qr_data) => {
-	QRCode.toDataURL(qr_data, function (err, url) {
-		const base64Data = url.replace(/^data:image\/png;base64,/, "");
-		const link = createTempLinkFromBase64(base64Data, 'src/qrcode/');
-		console.log(link)
-	})
+  QRCode.toDataURL(qr_data, function (err, url) {
+    const base64Data = url.replace(/^data:image\/png;base64,/, "");
+    const link = createTempLinkFromBase64(base64Data, 'src/qrcode/');
+    console.log(link)
+  })
 };
 
 export default getQrCodeFile;

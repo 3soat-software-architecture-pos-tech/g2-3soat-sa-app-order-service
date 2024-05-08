@@ -4,16 +4,15 @@ import orderGateway from "../../application/orderGateway.js";
 const gateway = orderGateway();
 
 export default function updateById(
-    id,
-    orderNumber,
-    customer,
-    orderProducts, //array of products
-    totalOrderPrice,
-    orderStatus,
-    updatedAt
+  id,
+  orderNumber,
+  customer,
+  orderProducts, //array of products
+  totalOrderPrice,
+  orderStatus,
+  updatedAt
 ) {
-    //console.log('Use Case update ->', name);
-    
+
   // validate
   if (!orderNumber || !customer || !orderProducts || !totalOrderPrice || !orderStatus) {
     //throw new Error('Name and CPF fields are mandatory');

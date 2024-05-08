@@ -4,16 +4,17 @@ import orderGateway from "../../application/orderGateway.js";
 const gateway = orderGateway();
 
 export default function updateStatusById(
-    id,
-    orderStatus,
-    updatedAt
+  id,
+  orderStatus,
+  updatedAt
 ) {
-    
+
   // validate
   if (!id || !orderStatus) {
     //throw new Error('Name and CPF fields are mandatory');
     return Promise.resolve('Order Id and new status are mandatory');
   }
+  // eslint-disable-next-line no-unused-vars
   const updatedOrder = order(
     orderStatus,
     updatedAt,

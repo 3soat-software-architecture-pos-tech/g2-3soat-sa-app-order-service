@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest --coverage --passWithNoTests --watchAll",
+    "test": "jest --coverage --passWithNoTests",
     "dev": "nodemon server.js",
     "doc": "node swagger.js"
   },

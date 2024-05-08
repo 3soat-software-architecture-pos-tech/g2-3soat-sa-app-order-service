@@ -5,27 +5,27 @@ import useCasedelete from '../use_cases/status/deleteById.js'
 import useCaseUpdateById from '../use_cases/status/updateById.js';
 
 export default function statusController() {
-  
-	const addNewStatus = (req, res, next) => {
-		console.log('controller status');
+
+  const addNewStatus = async (req, res, next) => {
+    console.log('controller status');
     //console.log('repositorio-> ',dbRepository);
-		//console.log('Request body:', req.body);
+    //console.log('Request body:', req.body);
     const {description} = req.body;
-	//console.log('reqbody',req.body);
+    //console.log('reqbody',req.body);
     useCaseCreate(
       description,
       Date(),
       Date()
     )
-    .then((status) => res.json(status))
-    .catch((error) => res.json(next(`${error.message} - Status creation failed`)));
-		/*.then((status) => {
+      .then((status) => res.json(status))
+      .catch((error) => res.json(next(`${error.message} - Status creation failed`)));
+    /*.then((status) => {
 			return res.json('Status created successfully');
 		})
 		.catch((error) => res.json(`${error.message} - Status creation failed`));*/
   };
 
-  const fetchStatusById = (req, res, next) => {
+  const fetchStatusById = async (req, res, next) => {
     //console.log('params by id-> ',req.params.id);
     //console.log('repository -> ',dbRepository);
     useCaseFindById(req.params.id)
@@ -56,7 +56,7 @@ export default function statusController() {
       .then(() => res.json('Status sucessfully deleted!'))
       .catch((error) => next(error));
   };
-  
+
   const updateStatusById = (req, res, next) => {
     const {description} = req.body;
 
@@ -69,11 +69,11 @@ export default function statusController() {
     )
       .then((message) => res.json(message))
       .catch((error) => next(error));
-      
+
   };
-  //console.log('Controller final',dbRepository);
+
   return {
-	addNewStatus,
+    addNewStatus,
     fetchAllStatus,
     fetchStatusById,
     updateStatusById,

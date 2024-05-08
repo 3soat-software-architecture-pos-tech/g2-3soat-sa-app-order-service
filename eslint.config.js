@@ -12,16 +12,16 @@ export default [
         ...globals.jest
       }
     },
-		plugins: {
+    plugins: {
       jsdoc,
     },
     rules: {
-      "no-console": "off",
       "indent": ["error", 2],
       "no-trailing-spaces": "error",
       "no-multi-spaces": "error",
       "linebreak-style": ["error", "unix"],
-      // "no-console": "off",
+      "no-console": "warn",
+      "no-restricted-syntax": ["error"],
       // "no-undef": "off",
       // "no-unused-vars": "off",
       // "no-constant-condition": "off",
