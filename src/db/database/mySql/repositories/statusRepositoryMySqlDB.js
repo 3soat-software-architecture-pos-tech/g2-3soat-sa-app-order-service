@@ -3,7 +3,6 @@ import db from '../../../../config/dbConnectMysql.js';
 export default function statusRepositoryMySqlDB() {
 
   const add = async (statusEntity) => {
-    console.log("descricao",statusEntity.getDescription())
     return new Promise((resolve, reject) => {
       // Begin transaction
       db.beginTransaction((beginError) => {
@@ -12,7 +11,7 @@ export default function statusRepositoryMySqlDB() {
         }
 
         const insertQuery = "INSERT INTO statusorder (statusName, description, createdAt) VALUES (?, ?, CURRENT_TIMESTAMP)";
-        db.query(insertQuery, [statusEntity.getDescription(), statusEntity.getDescription()], (error, result) => {
+        db.query(insertQuery, [statusEntity.getDescription(), statusEntity.getStatusName()], (error, result) => {
           if (error) {
             // Rollback the transaction if there is an error
             return db.rollback(() => reject(error));
@@ -24,8 +23,6 @@ export default function statusRepositoryMySqlDB() {
               // Rollback the transaction if there is an error during commit
               return db.rollback(() => reject(commitError));
             }
-
-
             const insertId = result.insertId;
             const description = statusEntity.getDescription();
             return resolve({ "Status added ": insertId, "Description": description });
@@ -35,7 +32,6 @@ export default function statusRepositoryMySqlDB() {
     });
   };
 
-  //const findAll = (params) => StatusModel.find();
   const findAll = async () => {
     return new Promise((resolve, reject) => {
 
@@ -67,7 +63,6 @@ export default function statusRepositoryMySqlDB() {
     });
   };
 
-  //const findById = (id) => StatusModel.findById(id);
   const findById = (id) => {
     return new Promise((resolve, reject) => {
       // Begin transaction
@@ -97,7 +92,7 @@ export default function statusRepositoryMySqlDB() {
       });
     });
   };
-  //const deleteById = (id) => StatusModel.findByIdAndRemove(id);
+
   const deleteById = (id) => {
     return new Promise((resolve, reject) => {
       // Begin transaction
@@ -126,20 +121,8 @@ export default function statusRepositoryMySqlDB() {
       });
     });
   };
-  /*const updateById = (id, statusEntity) => {
-		const updatedStatus = {
-			//statusName: statusEntity.getStatusName(),
-			description: statusEntity.getDescription(),
-			updatedAt: new Date()
-		};
 
-		return StatusModel.findOneAndUpdate(
-		  { _id: id },
-		  { $set: updatedStatus },
-		  { new: true }
-		);
-	  };*/
-	  const updateById = (id, statusEntity) => {
+  const updateById = (id, statusEntity) => {
     return new Promise((resolve, reject) => {
       // Begin transaction
       db.beginTransaction((beginError) => {
@@ -179,11 +162,10 @@ export default function statusRepositoryMySqlDB() {
   };
 
   return {
+    add,
     findById,
     findAll,
-    add,
     updateById,
     deleteById
-
   }
 }
