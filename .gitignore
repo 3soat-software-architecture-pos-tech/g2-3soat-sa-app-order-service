@@ -1,0 +1,13 @@
+node_modules
+
+# config
+.vscode
+
+# secrets
+.env_local
+.env.local
+
+# testing
+coverage/
+coverage/lcov-report/
+coverage/clover.xml
