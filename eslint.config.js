@@ -1,5 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
+import jsdoc from 'eslint-plugin-jsdoc';
 
 
 export default [
@@ -10,6 +11,9 @@ export default [
         ...globals.node,
         ...globals.jest
       }
+    },
+		plugins: {
+      jsdoc,
     },
     rules: {
       "no-console": "off",
