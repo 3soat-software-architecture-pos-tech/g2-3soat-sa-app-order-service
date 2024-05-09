@@ -1,4 +1,4 @@
-import status from "../../entities/Status.js";
+import Status from "../../entities/Status.js";
 import statusGateway from "../../application/statusGateway.js";
 
 const gateway = statusGateway();
@@ -13,7 +13,7 @@ export default async function updateById(
   if (!statusName || !description) {
     return Promise.resolve('Status name and Description fields are mandatory');
   }
-  const updatedStatus = status(
+  const updatedStatus = new Status(
     statusName,
     description,
     updatedAt

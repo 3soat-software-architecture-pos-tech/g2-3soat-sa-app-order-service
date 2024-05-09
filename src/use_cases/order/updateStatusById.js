@@ -1,4 +1,3 @@
-import order from "../../entities/Order.js";
 import orderGateway from "../../application/orderGateway.js";
 
 const gateway = orderGateway();
@@ -6,6 +5,7 @@ const gateway = orderGateway();
 export default function updateStatusById(
   id,
   orderStatus,
+  // eslint-disable-next-line no-unused-vars
   updatedAt
 ) {
 
@@ -15,10 +15,10 @@ export default function updateStatusById(
     return Promise.resolve('Order Id and new status are mandatory');
   }
   // eslint-disable-next-line no-unused-vars
-  const updatedOrder = order(
-    orderStatus,
-    updatedAt,
-  );
+  // const updatedOrder = order(
+  //   orderStatus,
+  //   updatedAt,
+  // );
 
   return gateway.findById(id).then((foundOrder) => {
     if (!foundOrder) {

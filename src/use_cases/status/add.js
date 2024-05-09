@@ -1,4 +1,4 @@
-import status from "../../entities/Status.js";
+import Status from "../../entities/Status.js";
 import statusGateway from "../../application/statusGateway.js";
 
 const gateway = statusGateway();
@@ -11,6 +11,6 @@ export default function createStatus(
   if (!description) {
     return Promise.resolve(`Description fields cannot be empty`);
   }
-  const newStatus = status(description, createdAt, updatedAt)
+  const newStatus = new Status(description, createdAt, updatedAt)
   return gateway.add(newStatus);
 }

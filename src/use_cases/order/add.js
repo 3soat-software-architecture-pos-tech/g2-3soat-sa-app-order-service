@@ -1,4 +1,4 @@
-import order from "../../entities/Order.js";
+import Order from "../../entities/Order.js";
 import orderGateway from "../../application/orderGateway.js";
 
 const gateway = orderGateway();
@@ -17,7 +17,7 @@ export default function createOrder(
     return Promise.resolve(`Order Number, Customer, Total Order Price and Order Status fields cannot be empty`);
   }
 
-  const newOrder = order(orderNumber, customer, totalOrderPrice, orderStatus, orderProductsDescription, createdAt, updatedAt);
+  const newOrder = new Order(orderNumber, customer, totalOrderPrice, orderStatus, orderProductsDescription, createdAt, updatedAt);
 
   return gateway.add(newOrder);
 }
