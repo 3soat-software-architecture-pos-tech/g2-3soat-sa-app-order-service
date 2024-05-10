@@ -4,7 +4,7 @@ export default function statusRoutes(express) {
 	const router = express.Router();
 	const controller = statusController();
 
-	//GET ENDPOINTS
+	// GET ENDPOINT
 	router.route('/').get(controller.fetchAllStatus,
 		// #swagger.tags = ['Status Order']
 		// #swagger.description = 'Endpoint to list all categories.'
@@ -15,7 +15,7 @@ export default function statusRoutes(express) {
 	);
 
 
-	//POST ENDPOINTS
+	// POST ENDPOINT
 	router.route('/').post(controller.addNewStatus,
 		// #swagger.tags = ['Status Order']
 		// #swagger.description = 'Endpoint to add status.'
@@ -27,7 +27,7 @@ export default function statusRoutes(express) {
 		} */
 	);
 
-	//PUT ENDPOINTS
+	// PUT ENDPOINT
 	router.route('/:id').put(controller.updateStatusById,
 		// #swagger.tags = ['Status Order']
 		// #swagger.description = 'Endpoint to update customer by ID.'
@@ -35,11 +35,11 @@ export default function statusRoutes(express) {
 				in: 'body',
 				description: 'Information do status.',
 				required: true,
-				schema: { $ref: "#/definitions/AddOrderStatus" }
+				schema: { $ref: "#/definitions/UpdateOrderStatus" }
 		} */
 	);
 
-	//DELETE ENDPOINTS
+	// DELETE ENDPOINT
 	router.route('/:id').delete(controller.deleteStatusById,
 		// #swagger.tags = ['Status Order']
 		// #swagger.description = 'Endpoint to delete status by ID.'

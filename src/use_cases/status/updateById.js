@@ -7,17 +7,16 @@ export default async function updateById(
 	id,
 	statusName,
 	description,
-	//createAt,
 	updatedAt
 ) {
 	if (!statusName || !description) {
 		return Promise.resolve('Status name and Description fields are mandatory');
 	}
-	const updatedStatus = new Status(
+	const updatedStatus = new Status({
 		statusName,
 		description,
 		updatedAt
-	);
+	});
 
 	return gateway.findById(id).then((foundStatus) => {
 		if (!foundStatus) {

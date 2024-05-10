@@ -13,20 +13,6 @@ jest.mock('../../use_cases/order/findById.js');
 jest.mock('../../use_cases/status/getAll.js');
 jest.mock('../../use_cases/order/getAll.js');
 
-jest.mock('../../entities/Order.js', () => {
-	return jest.fn(() => ({
-		getOrderNumber: jest.fn(),
-		getCustomer: jest.fn(),
-		getTotalOrderPrice: jest.fn(),
-		getOrderStatus: jest.fn(),
-		getOrderProductsDescription: jest.fn(),
-		getCreatedAt: jest.fn(),
-		getUpdatedAt: jest.fn(),
-		getOrder: jest.fn()
-	}));
-});
-
-const FIXED_SYSTEM_TIME = '2020-11-18T00:00:00Z';
 const next = jest.fn();
 const orderResponse = {
 	orderNumber: "1",
@@ -43,8 +29,6 @@ describe("Order Controller", () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-		jest.useFakeTimers('modern');
-		jest.setSystemTime(Date.parse(FIXED_SYSTEM_TIME));
 	});
 
 	describe('addNewOrder' , () => {
@@ -71,54 +55,58 @@ describe("Order Controller", () => {
 	});
 
 	describe('fetchOrderById', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
 		const req = {
 			params: {
 				id: "1"
 			}
 		};
+		const res = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn()
+		};
+
 		it("should fetch order by id properly when there is order", async () => {
 			useCaseFindById.mockResolvedValue(orderResponse);
 
-			await orderController().fetchOrderById(req, res, next);
-			expect(useCaseFindById).toHaveBeenCalledTimes(1);
-			expect(useCaseFindById).toHaveBeenCalledWith("1");
+			await orderController().fetchOrderById(req, res);
+			expect(res.status).toHaveBeenCalledWith(200);
+			expect(res.json).toHaveBeenCalledWith(orderResponse);
 		});
 
-		it("should fetch order by id properly when there is NO order", async () => {
+		it("should fetch order by id properly when no result", async () => {
 			useCaseFindById.mockResolvedValue(null);
-			const res = {
-				json: jest.fn(),
-			};
 
-			await orderController().fetchOrderById(req, res, next)	;
-			expect(useCaseFindById).toHaveBeenCalledTimes(1);
-			expect(res.json).toHaveBeenCalledWith("No order found with id: 1");
+			await orderController().fetchOrderById(req, res)	;
+			expect(res.status).toHaveBeenCalledWith(401);
+			expect(res.json).toHaveBeenCalledWith('No order found with id: 1');
 		});
 
-		// FIXME: This test is not working
-		it("should call next with error when useCasefindById throws an error", async () => {
-			const error = new Error('Error');
-			useCaseFindById.mockResolvedValue(error);
-			const res = {
-				json: jest.fn(),
-			};
+		it("should fetch order by id properly when throws an error", async () => {
+			useCaseFindById.mockRejectedValueOnce(new Error('Error'));
 
-			await orderController().fetchOrderById(req, res, next);
-			expect(useCaseFindById).toHaveBeenCalledWith('1');
-    	// expect(next).toHaveBeenCalled();
+			await orderController().fetchOrderById(req, res)	;
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.json).toHaveBeenCalledWith('Error - Order fetchOrderById failed');
 		});
 	})
 
 	describe('fetchAllOrder', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+		const res = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn()
+		};
 		const req = {
-			params: {
-				id: "1"
+			query: {
+				list: 'all'
 			}
 		};
 
-		const res = {
-			json: jest.fn(),
-		};
 		it("should fetch all orders properly", async () => {
 			const response = [
 				{
@@ -153,13 +141,8 @@ describe("Order Controller", () => {
 				}
 			]
 			useCaseGetAllOrders.mockResolvedValue(response);
-			const req = {
-				query: {
-					list: 'all'
-				}
-			};
-			await orderController().fetchAllOrder(req, res, next);
-			expect(useCaseGetAllOrders).toHaveBeenCalledTimes(1);
+			await orderController().fetchAllOrder(req, res);
+			expect(res.status).toHaveBeenCalledWith(200);
 			expect(res.json).toHaveBeenCalledWith(response);
 		});
 
@@ -202,8 +185,8 @@ describe("Order Controller", () => {
 					list: 'in_progress'
 				}
 			};
-			await orderController().fetchAllOrder(req, res, next);
-			expect(useCaseGetAllOrders).toHaveBeenCalledTimes(1);
+			await orderController().fetchAllOrder(req, res);
+			expect(res.status).toHaveBeenCalledWith(200);
 			expect(res.json).toHaveBeenCalledWith([
 				{
 					orderNumber: "1",
@@ -230,13 +213,17 @@ describe("Order Controller", () => {
 
 		it("should return properly when there is NO order", async () => {
 			useCaseGetAllOrders.mockResolvedValue(null);
-			const res = {
-				json: jest.fn(),
-			};
+			await orderController().fetchAllOrder(req, res);
+			expect(res.status).toHaveBeenCalledWith(401);
+			expect(res.json).toHaveBeenCalledWith('No orders found');
+		});
 
-			await orderController().fetchAllOrder(req, res, next);
-			expect(useCaseGetAllOrders).toHaveBeenCalledTimes(1);
-			expect(res.json).toHaveBeenCalledWith("No order found");
+		it("should fetch order by id properly when throws an error", async () => {
+			useCaseGetAllOrders.mockRejectedValueOnce(new Error('Error'));
+
+			await orderController().fetchAllOrder(req, res)	;
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.json).toHaveBeenCalledWith('Error - Order fetchAllOrder failed');
 		});
 	})
 
@@ -246,25 +233,36 @@ describe("Order Controller", () => {
 				id: "1"
 			}
 		};
+		const res = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn()
+		};
+
+		const responseBody = {
+			fieldCount: 0,
+			affectedRows: 1,
+			insertId: 0,
+			info: '',
+			serverStatus: 3,
+			warningStatus: 0,
+			changedRows: 0
+		}
 		it("should delete order by id properly", async () => {
-			useCaseDelete.mockResolvedValue();
-			await orderController().deleteOrderById(req, res, next);
-			expect(useCaseDelete).toHaveBeenCalledTimes(1);
-			expect(useCaseDelete).toHaveBeenCalledWith("1");
+			useCaseDelete.mockResolvedValue(responseBody);
+
+			await orderController().deleteOrderById(req, res);
+			expect(res.status).toHaveBeenCalledWith(200);
+			expect(res.json).toHaveBeenCalledWith('Order sucessfully deleted!');
 		});
 
-		it("should call next with error when useCasedelete throws an error", async () => {
-			const error = new Error('Error');
-			useCaseDelete.mockResolvedValue(error);
-			const res = {
-				json: jest.fn(),
-			};
+		it("should return error", async () => {
+			useCaseDelete.mockRejectedValueOnce(new Error('Error'));
 
-			await orderController().deleteOrderById(req, res, next);
-			expect(useCaseDelete).toHaveBeenCalledWith('1');
-			// expect(next).toHaveBeenCalled();
+			await orderController().deleteOrderById(req, res);
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.json).toHaveBeenCalledWith('Error - Status deleteStatusById failed');
 		});
-	})
+	});
 
 	describe('updateOrderById', () => {
 		const req = {
@@ -279,23 +277,24 @@ describe("Order Controller", () => {
 				orderStatus: "pending"
 			}
 		};
+		const res = {
+			status: jest.fn().mockReturnThis(),
+			json: jest.fn()
+		};
 		it("should update order by id properly", async () => {
 			useCaseUpdate.mockResolvedValue('Order sucessfully updated!');
-			await orderController().updateOrderById(req, res, next);
-			expect(useCaseUpdate).toHaveBeenCalledTimes(1);
-			expect(useCaseUpdate).toHaveBeenCalledWith("1", "1", "customer", [], 100, "pending", Date());
+			await orderController().updateOrderById(req, res);
+
+			expect(res.status).toHaveBeenCalledWith(200);
+			expect(res.json).toHaveBeenCalledWith('Order sucessfully updated!');
 		});
 
-		it("should call next with error when useCaseupdateById throws an error", async () => {
-			const error = new Error('Error');
-			useCaseUpdate.mockResolvedValue(error);
-			const res = {
-				json: jest.fn(),
-			};
+		it("should return error", async () => {
+			useCaseUpdate.mockRejectedValueOnce(new Error('Error'));
 
-			await orderController().updateOrderById(req, res, next);
-			expect(useCaseUpdate).toHaveBeenCalledWith('1', '1', 'customer', [], 100, 'pending', Date());
-			// expect(next).toHaveBeenCalled();
+			await orderController().updateOrderById(req, res);
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.json).toHaveBeenCalledWith('Error - Status deleteStatusById failed');
 		});
 	});
 });

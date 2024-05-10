@@ -1,6 +1,6 @@
 import useCaseCreate from '../use_cases/order/add.js'
 import useCasefindById from '../use_cases/order/findById.js';
-import useCasedelete from '../use_cases/order/deleteById.js'
+import useCaseDelete from '../use_cases/order/deleteById.js'
 import useCaseupdateById from '../use_cases/order/updateById.js';
 import useCaseGetAllOrders from '../use_cases/order/getAll.js';
 import useCaseStatusAll from '../use_cases/status/getAll.js';
@@ -18,14 +18,13 @@ const getInProgressList = (order) => {
 
 export default function orderController() {
 
-	const addNewOrder = async (req, res, next) => {
+	const addNewOrder = async (req, res) => {
 		const { orderNumber, customer, orderProductsDescription } = req.body;
 
 		// vincular automaticamente o status
 		const statusList = await useCaseStatusAll();
 		const initialStatus = statusList.find(status => status.description === 'pending' || status.description === 'payment_required');
 
-		//build complete product
 		// atualiza produtos a partir de orderProducts
 		const orderProductsList = await Promise.all(orderProductsDescription.map(async (product) => {
 			// TODO: buscar detalhes do produto
@@ -63,16 +62,16 @@ export default function orderController() {
 			initialStatus: initialStatus.id,
 			orderProductsDescription,
 		}
+		try {
+			const order = await useCaseCreate(orderNumber,
+				customer,
+				totalOrderPrice,
+				initialStatus.id,
+				orderProductsDescription,
+				Date(),
+				Date()
+			);
 
-		useCaseCreate(
-			orderNumber,
-			customer,
-			totalOrderPrice,
-			initialStatus.id,
-			orderProductsDescription,
-			Date(),
-			Date()
-		).then(async (order) => {
 			const data = {
 				title: `Order ${orderNumber}-${customer}`,
 				description: `Purchase description ${orderNumber}`,
@@ -83,63 +82,84 @@ export default function orderController() {
 				total_amount: totalOrderPrice
 			};
 			const qrcode = await addPayment(data);
-			res.json({ order, qrcode });
-		}).catch((error) => res.json(next(`${error} - Order creation failed ---`)));
+			return res.status(200).json({ order, qrcode });
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Order creation failed`);
+		}
 	};
 
-	const fetchOrderById = async (req, res, next) => {
-		useCasefindById(req.params.id).then((order) => {
-			if (!order) {
-				res.json(`No order found with id: ${req.params.id}`);
+	const fetchOrderById = async (req, res) => {
+		const { id } = req.params;
+		try {
+			const result = await useCasefindById(id);
+
+			if (!result) {
+				return res.status(401).json(`No order found with id: ${id}`);
 			}
-			res.json(order);
-		}).catch((error) => next(error));
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Order fetchOrderById failed`);
+		}
 	};
 
-	const fetchAllOrder = async (req, res, next) => {
-		useCaseGetAllOrders()
-			.then((order) => {
-				if (!order) {
-					res.json(`No order found`);
-				}
-				if (req.query.list === 'in_progress') {
-					const list = getInProgressList(order);
-					res.json(list);
-				} else {
-					res.json(order);
-				}
-			})
-			.catch((error) => next(error));
+	const fetchAllOrder = async (req, res) => {
+
+		try {
+			const result = await useCaseGetAllOrders();
+
+			if (!result) {
+				return res.status(401).json(`No orders found`);
+			}
+			if (req.query.list === 'in_progress') {
+				const list = getInProgressList(result);
+				return res.status(200).json(list);
+			} else {
+				return res.status(200).json(result);
+			}
+
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Order fetchAllOrder failed`);
+		}
 	};
 
-	const deleteOrderById = async (req, res, next) => {
-		useCasedelete(req.params.id)
-			.then(() => res.json('Order sucessfully deleted!'))
-			.catch((error) => next(error));
+	const deleteOrderById = async (req, res) => {
+		const { id } = req.params;
+
+		try {
+			await useCaseDelete(id);
+			return res.status(200).json('Order sucessfully deleted!');
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status deleteStatusById failed`);
+		}
 	};
 
-	const updateOrderById = async (req, res, next) => {
-		const {orderNumber, customer, orderProducts, totalOrderPrice, orderStatus} = req.body;
-
-		useCaseupdateById(
-			req.params.id,
-			orderNumber,
-			customer,
-			orderProducts,
-			totalOrderPrice,
-			orderStatus,
-			Date()
-		)
-			.then((message) => res.json(message))
-			.catch((error) => next(error));
-
+	const updateOrderById = async (req, res) => {
+		const { orderNumber, customer, orderProducts, totalOrderPrice, orderStatus } = req.body;
+		const { id } = req.params;
+ 		try {
+			const result = await useCaseupdateById(id,
+				orderNumber,
+				customer,
+				orderProducts,
+				totalOrderPrice,
+				orderStatus,
+				Date()
+			);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status deleteStatusById failed`);
+		}
 	};
 
-	const updateStatusById = (req, res, next) => {
-		const id = req.params.id;
-		const {orderStatus} = req.body;
-
-		useCaseUpdateStatusById(id, orderStatus).then((message) => res.json(message)).catch((error) => next(error));
+	const updateStatusById = async (req, res) => {
+		const { orderStatus } = req.body;
+		const { id } = req.params;
+ 		try {
+			const result = await useCaseUpdateStatusById(id, orderStatus);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status deleteStatusById failed`);
+		}
 	};
 
 	return {

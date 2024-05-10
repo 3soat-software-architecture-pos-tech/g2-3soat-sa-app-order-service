@@ -3,7 +3,7 @@ import orderGateway from "../../application/orderGateway.js";
 
 const gateway = orderGateway();
 
-export default function updateById(
+export default async function updateById(
 	id,
 	orderNumber,
 	customer,
@@ -15,14 +15,14 @@ export default function updateById(
 	if (!orderNumber || !customer || !orderProducts || !totalOrderPrice || !orderStatus) {
 		return Promise.resolve('Order Number, Customer, Total Order Price and Order Status fields are mandatory');
 	}
-	const updatedOrder = new Order(
+	const updatedOrder = new Order({
 		orderNumber,
 		customer,
 		orderProducts, //array of products
 		totalOrderPrice,
 		orderStatus,
 		updatedAt,
-	);
+	});
 
 	return gateway.findById(id).then((foundOrder) => {
 		if (!foundOrder) {

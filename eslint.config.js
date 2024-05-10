@@ -22,6 +22,7 @@ export default [
 			"linebreak-style": ["error", "unix"],
 			"no-console": "warn",
 			"no-restricted-syntax": ["error"],
+			// "object-curly-spacing": ["error", "always"],
 			// "no-undef": "off",
 			// "no-unused-vars": "off",
 			// "no-constant-condition": "off",

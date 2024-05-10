@@ -31,7 +31,7 @@ export default function orderRoutes(express) {
 			in: 'body',
 			description: 'Information order.',
 			required: true,
-			chema: { $ref: "#/definitions/AddOrder" }
+			schema: { $ref: "#/definitions/AddOrder" }
 		} */
 	);
 

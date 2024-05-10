@@ -62,10 +62,12 @@ const document = {
 			$orderStatus: "ID Status"
 		},
 		AddOrderStatus:{
-			$description: "pending"
+			$description: "pending",
+			$statusName: "pending"
 		},
 		UpdateOrderStatus:{
-			$orderStatus: "ID new status"
+			$description: "pending",
+			$statusName: "pending"
 		},
 		AddPayment: {
 			$description: "Description of payment",

@@ -1,75 +1,62 @@
 import useCaseCreate from '../use_cases/status/add.js'
 import useCasegetAll from '../use_cases/status/getAll.js'
 import useCaseFindById from '../use_cases/status/findById.js';
-import useCasedelete from '../use_cases/status/deleteById.js'
+import useCaseDelete from '../use_cases/status/deleteById.js'
 import useCaseUpdateById from '../use_cases/status/updateById.js';
 
 export default function statusController() {
 
-	const addNewStatus = async (req, res, next) => {
-		console.log('controller status');
-		//console.log('repositorio-> ',dbRepository);
-		//console.log('Request body:', req.body);
-		const {description} = req.body;
-		//console.log('reqbody',req.body);
-		useCaseCreate(
-			description,
-			Date(),
-			Date()
-		)
-			.then((status) => res.json(status))
-			.catch((error) => res.json(next(`${error.message} - Status creation failed`)));
-		/*.then((status) => {
-			return res.json('Status created successfully');
-		})
-		.catch((error) => res.json(`${error.message} - Status creation failed`));*/
+	const addNewStatus = async (req, res) => {
+		const { description, statusName } = req.body;
+		try {
+			const status = await useCaseCreate(description, statusName, Date(), Date());
+			return res.status(200).json(status);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status creation failed`);
+		}
 	};
 
-	const fetchStatusById = async (req, res, next) => {
-		//console.log('params by id-> ',req.params.id);
-		//console.log('repository -> ',dbRepository);
-		useCaseFindById(req.params.id)
-			.then((status) => {
-				if (!status) {
-					//throw new Error(`No status found with id: ${req.params.id}`);
-					res.json(`No status found with id: ${req.params.id}`);
-				}
-				res.json(status);
-			})
-			.catch((error) => next(error));
+	const fetchStatusById = async (req, res) => {
+		try {
+			const status = await useCaseFindById(req.params.id);
+			if (!status) {
+				return res.status(401).json(`No status found with id: ${req.params.id}`);
+			}
+			return res.status(200).json(status);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status fetchStatusById failed`);
+		}
 	};
 
-	const fetchAllStatus = (req, res, next) => {
-		useCasegetAll()
-			.then((status) => {
-				if (!status) {
-					//throw new Error(`No statuss found with id: ${req.params.id}`);
-					res.json(`No status found`);
-				}
-				res.json(status);
-			})
-			.catch((error) => next(error));
+	const fetchAllStatus = async (req, res) => {
+		try {
+			const statusList = await useCasegetAll();
+			return res.status(200).json(statusList);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status fetchAllStatus failed`);
+		}
 	};
 
-	const deleteStatusById = (req, res, next) => {
-		useCasedelete(req.params.id)
-			.then(() => res.json('Status sucessfully deleted!'))
-			.catch((error) => next(error));
+	const deleteStatusById = async (req, res) => {
+		const { id } = req.params;
+
+		try {
+			const statusList = await useCaseDelete(id);
+			return res.status(200).json(statusList);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status deleteStatusById failed`);
+		}
 	};
 
-	const updateStatusById = (req, res, next) => {
-		const {description} = req.body;
-
-		//console.log('controller update by id->',dbRepository);
-		useCaseUpdateById(
-			req.params.id,
-
-			description,
-			Date()
-		)
-			.then((message) => res.json(message))
-			.catch((error) => next(error));
-
+	const updateStatusById = async (req, res) => {
+		const { description, statusName } = req.body;
+		const { id } = req.params;
+ 		try {
+			const result = await useCaseUpdateById(id, statusName, description, Date());
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json(`${error.message} - Status deleteStatusById failed`);
+		}
 	};
 
 	return {
