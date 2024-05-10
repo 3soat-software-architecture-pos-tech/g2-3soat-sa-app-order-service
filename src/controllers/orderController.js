@@ -28,7 +28,7 @@ export default function orderController() {
 		//build complete product
 		// atualiza produtos a partir de orderProducts
 		const orderProductsList = await Promise.all(orderProductsDescription.map(async (product) => {
-			// buscar detalhes do produto
+			// TODO: buscar detalhes do produto
 			const productDetails = {} // await useCaseGetProductById(product.productId);
 			const { productQuantity } = product;
 
@@ -72,37 +72,32 @@ export default function orderController() {
 			orderProductsDescription,
 			Date(),
 			Date()
-		)
-			.then(async (order) => {
-
-				const data = {
-					title: `Order ${orderNumber}-${customer}`,
-					description: `Purchase description ${orderNumber}`,
-					//external_reference: order._id, // Número interno do Pedido dentro da sua loja
-					external_reference: order.orderId.toString(), // Número interno do Pedido dentro da sua loja
-					items: itemsList,
-					notification_url: webhookURL,
-					total_amount: totalOrderPrice
-				};
-				const qrcode = await addPayment(data);
-				res.json({ order, qrcode });
-			})
-			.catch((error) => res.json(next(`${error} - Order creation failed ---`)));
+		).then(async (order) => {
+			const data = {
+				title: `Order ${orderNumber}-${customer}`,
+				description: `Purchase description ${orderNumber}`,
+				//external_reference: order._id, // Número interno do Pedido dentro da sua loja
+				external_reference: order.orderId.toString(), // Número interno do Pedido dentro da sua loja
+				items: itemsList,
+				notification_url: webhookURL,
+				total_amount: totalOrderPrice
+			};
+			const qrcode = await addPayment(data);
+			res.json({ order, qrcode });
+		}).catch((error) => res.json(next(`${error} - Order creation failed ---`)));
 	};
 
-	const fetchOrderById = (req, res, next) => {
-		useCasefindById(req.params.id)
-			.then((order) => {
-				if (!order) {
-					res.json(`No order found with id: ${req.params.id}`);
-				}
-				res.json(order);
-			})
-			.catch((error) => next(error));
+	const fetchOrderById = async (req, res, next) => {
+		useCasefindById(req.params.id).then((order) => {
+			if (!order) {
+				res.json(`No order found with id: ${req.params.id}`);
+			}
+			res.json(order);
+		}).catch((error) => next(error));
 	};
 
-	const fetchAllOrder = (req, res, next) => {
-		useCaseGetAllOrders( )
+	const fetchAllOrder = async (req, res, next) => {
+		useCaseGetAllOrders()
 			.then((order) => {
 				if (!order) {
 					res.json(`No order found`);
@@ -117,13 +112,13 @@ export default function orderController() {
 			.catch((error) => next(error));
 	};
 
-	const deleteOrderById = (req, res, next) => {
+	const deleteOrderById = async (req, res, next) => {
 		useCasedelete(req.params.id)
 			.then(() => res.json('Order sucessfully deleted!'))
 			.catch((error) => next(error));
 	};
 
-	const updateOrderById = (req, res, next) => {
+	const updateOrderById = async (req, res, next) => {
 		const {orderNumber, customer, orderProducts, totalOrderPrice, orderStatus} = req.body;
 
 		useCaseupdateById(
@@ -146,6 +141,7 @@ export default function orderController() {
 
 		useCaseUpdateStatusById(id, orderStatus).then((message) => res.json(message)).catch((error) => next(error));
 	};
+
 	return {
 		addNewOrder,
 		fetchAllOrder,

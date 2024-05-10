@@ -2,7 +2,7 @@ import orderGateway from "../../application/orderGateway.js";
 
 const gateway = orderGateway();
 
-export default function updateStatusById(
+export default async function updateStatusById(
 	id,
 	orderStatus,
 	// eslint-disable-next-line no-unused-vars
