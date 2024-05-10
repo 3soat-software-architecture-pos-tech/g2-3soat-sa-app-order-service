@@ -8,16 +8,16 @@ const API_URL = 'https://1tjiofpdf4.execute-api.us-east-1.amazonaws.com/prod/';
  * @param {string} email - The email of the user to register.
  */
 async function testRegisterUser(email) {
-  const url = `/register-user`;
-  const headers = { 'Content-Type': 'application/json' };
-  const data = { email };
+	const url = `/register-user`;
+	const headers = { 'Content-Type': 'application/json' };
+	const data = { email };
 
-  try {
-    const response = await axiosClient(API_URL, headers).post(url, data);
-    return response;
-  } catch (error) {
-    return error.response;
-  }
+	try {
+		const response = await axiosClient(API_URL, headers).post(url, data);
+		return response;
+	} catch (error) {
+		return error.response;
+	}
 }
 
 /**
@@ -27,11 +27,11 @@ async function testRegisterUser(email) {
  * @param {string} confirmationCode - The confirmation code received by the user.
  */
 async function testConfirmUser(email, confirmationCode) {
-  const url = `/confirm-user`;
-  const headers = { 'Content-Type': 'application/json' };
-  const data = { email, confirmationCode };
+	const url = `/confirm-user`;
+	const headers = { 'Content-Type': 'application/json' };
+	const data = { email, confirmationCode };
 
-  return axiosClient(API_URL, headers).post(url, data);
+	return axiosClient(API_URL, headers).post(url, data);
 }
 
 /**
@@ -40,12 +40,12 @@ async function testConfirmUser(email, confirmationCode) {
  * @param {string} email - The email of the user to authenticate.
  */
 async function testAuthenticateUser(email) {
-  const url = `/authenticate-user`;
-  const headers = { 'Content-Type': 'application/json' };
-  const data = { email };
+	const url = `/authenticate-user`;
+	const headers = { 'Content-Type': 'application/json' };
+	const data = { email };
 
-  const resp = await axiosClient(API_URL, headers).post(url, data);
-  return resp;
+	const resp = await axiosClient(API_URL, headers).post(url, data);
+	return resp;
 }
 
 export {testRegisterUser, testConfirmUser, testAuthenticateUser}
