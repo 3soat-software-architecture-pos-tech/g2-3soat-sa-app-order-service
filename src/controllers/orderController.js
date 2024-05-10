@@ -54,16 +54,9 @@ export default function orderController() {
 			}
 		});
 
-		// eslint-disable-next-line no-unused-vars
-		const buildCreateBody = {
-			orderNumber,
-			customer,
-			totalOrderPrice,
-			initialStatus: initialStatus.id,
-			orderProductsDescription,
-		}
 		try {
-			const order = await useCaseCreate(orderNumber,
+			const order = await useCaseCreate(
+				orderNumber,
 				customer,
 				totalOrderPrice,
 				initialStatus.id,
@@ -75,14 +68,14 @@ export default function orderController() {
 			const data = {
 				title: `Order ${orderNumber}-${customer}`,
 				description: `Purchase description ${orderNumber}`,
-				//external_reference: order._id, // Número interno do Pedido dentro da sua loja
-				external_reference: order.orderId.toString(), // Número interno do Pedido dentro da sua loja
+				external_reference: order?.orderId?.toString(), // Número interno do Pedido dentro da sua loja
 				items: itemsList,
 				notification_url: webhookURL,
 				total_amount: totalOrderPrice
 			};
+
 			const qrcode = await addPayment(data);
-			return res.status(200).json({ order, qrcode });
+			return res.status(200).json({ order: order, qrcode: qrcode });
 		} catch (error) {
 			return res.status(400).json(`${error.message} - Order creation failed`);
 		}

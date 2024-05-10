@@ -5,6 +5,7 @@ import useCaseDelete from '../../use_cases/order/deleteById.js'
 import useCaseFindById from '../../use_cases/order/findById.js'
 import getAllStatus from '../../use_cases/status/getAll.js'
 import useCaseGetAllOrders from '../../use_cases/order/getAll.js'
+import addPayment from '../../use_cases/payment/addMercadoPago.js';
 
 jest.mock('../../use_cases/order/add.js');
 jest.mock('../../use_cases/order/updateById.js');
@@ -12,8 +13,8 @@ jest.mock('../../use_cases/order/deleteById.js');
 jest.mock('../../use_cases/order/findById.js');
 jest.mock('../../use_cases/status/getAll.js');
 jest.mock('../../use_cases/order/getAll.js');
+jest.mock('../../use_cases/payment/addMercadoPago.js');
 
-const next = jest.fn();
 const orderResponse = {
 	orderNumber: "1",
 	customer: "customer",
@@ -45,12 +46,23 @@ describe("Order Controller", () => {
 			}
 		};
 		it("should add new order", async () => {
+			addPayment.mockResolvedValue('qrcode_url');
 			getAllStatus.mockResolvedValue([{ statusId: 1, description: 'pending' }]);
 			useCaseCreate.mockResolvedValue(orderResponse);
 
-			await orderController().addNewOrder(req, res, next);
+			await orderController().addNewOrder(req, res);
 			expect(useCaseCreate).toHaveBeenCalledTimes(1);
-			// expect(useCaseCreate).toHaveBeenCalledWith("1", "customer", 100, "pending", req.body.orderProductsDescription, undefined, undefined);
+			expect(addPayment).toHaveBeenCalledTimes(1);
+			expect(res.status).toHaveBeenCalledWith(200);
+			expect(res.json).toHaveBeenCalledWith({ order: orderResponse, qrcode: 'qrcode_url'});
+		});
+
+		it("should handle error", async () => {
+			useCaseCreate.mockRejectedValueOnce(new Error('Error'));
+
+			await orderController().addNewOrder(req, res)	;
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.json).toHaveBeenCalledWith('Error - Order creation failed');
 		});
 	});
 
@@ -117,7 +129,8 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 1,
 						description: 'in_progress'
-					}
+					},
+					createdAt: '2024-01-01 00:00',
 				},
 				{
 					orderNumber: "2",
@@ -127,7 +140,8 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 2,
 						description: 'pending'
-					}
+					},
+					createdAt: '2024-01-01 00:00',
 				},
 				{
 					orderNumber: "3",
@@ -137,7 +151,8 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 1,
 						description: 'in_progress'
-					}
+					},
+					createdAt: '2024-01-01 00:00',
 				}
 			]
 			useCaseGetAllOrders.mockResolvedValue(response);
@@ -156,7 +171,8 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 1,
 						description: 'in_progress'
-					}
+					},
+					createdAt: '2024-01-01 00:00',
 				},
 				{
 					orderNumber: "2",
@@ -166,7 +182,8 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 2,
 						description: 'pending'
-					}
+					},
+					createdAt: '2024-01-01 00:00',
 				},
 				{
 					orderNumber: "3",
@@ -176,8 +193,53 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 1,
 						description: 'in_progress'
-					}
-				}
+					},
+					createdAt: '2024-01-01 00:00',
+				},
+				{
+					orderNumber: "4",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'done'
+					},
+					createdAt: '2024-01-01 00:00',
+				},
+				{
+					orderNumber: "5",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'received'
+					},
+					createdAt: '2024-01-01 00:00',
+				},
+				{
+					orderNumber: "6",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'done'
+					},
+					createdAt: '2024-01-01 02:00',
+				},
+				{
+					orderNumber: "7",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'received'
+					},
+					createdAt: '2024-01-01 02:00',
+				},
 			]
 			useCaseGetAllOrders.mockResolvedValue(response);
 			const req = {
@@ -189,6 +251,28 @@ describe("Order Controller", () => {
 			expect(res.status).toHaveBeenCalledWith(200);
 			expect(res.json).toHaveBeenCalledWith([
 				{
+					orderNumber: "4",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'done'
+					},
+					createdAt: '2024-01-01 00:00',
+				},
+				{
+					orderNumber: "6",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'done'
+					},
+					createdAt: '2024-01-01 02:00',
+				},
+				{
 					orderNumber: "1",
 					customer: "customer",
 					orderProducts: [],
@@ -196,7 +280,8 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 1,
 						description: 'in_progress'
-					}
+					},
+					createdAt: '2024-01-01 00:00',
 				},
 				{
 					orderNumber: "3",
@@ -206,8 +291,31 @@ describe("Order Controller", () => {
 					orderStatus: {
 						statusId: 1,
 						description: 'in_progress'
-					}
-				}
+					},
+					createdAt: '2024-01-01 00:00',
+				},
+				{
+					orderNumber: "5",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'received'
+					},
+					createdAt: '2024-01-01 00:00',
+				},
+				{
+					orderNumber: "7",
+					customer: "customer",
+					orderProducts: [],
+					totalOrderPrice: 100,
+					orderStatus: {
+						statusId: 1,
+						description: 'received'
+					},
+					createdAt: '2024-01-01 02:00',
+				},
 			]);
 		});
 
