@@ -6,6 +6,14 @@ import useCaseFindById from '../../use_cases/order/findById.js'
 import getAllStatus from '../../use_cases/status/getAll.js'
 import useCaseGetAllOrders from '../../use_cases/order/getAll.js'
 import addPayment from '../../use_cases/payment/addMercadoPago.js';
+import useCaseProductById from '../../use_cases/product/getById.js';
+
+jest.mock('../../config/dbConnectMysql.js', () => ({
+	beginTransaction: jest.fn(),
+	query: jest.fn(),
+	rollback: jest.fn(),
+	commit: jest.fn(),
+}));
 
 jest.mock('../../use_cases/order/add.js');
 jest.mock('../../use_cases/order/updateById.js');
@@ -14,6 +22,7 @@ jest.mock('../../use_cases/order/findById.js');
 jest.mock('../../use_cases/status/getAll.js');
 jest.mock('../../use_cases/order/getAll.js');
 jest.mock('../../use_cases/payment/addMercadoPago.js');
+jest.mock('../../use_cases/product/getById.js');
 
 const orderResponse = {
 	orderNumber: "1",
@@ -47,14 +56,27 @@ describe("Order Controller", () => {
 		};
 		it("should add new order", async () => {
 			addPayment.mockResolvedValue('qrcode_url');
-			getAllStatus.mockResolvedValue([{ statusId: 1, description: 'pending' }]);
+			getAllStatus.mockResolvedValue([{ id: 1, description: 'pending' }]);
+			useCaseProductById.mockResolvedValue({ price: 55, productName: 'product' });
 			useCaseCreate.mockResolvedValue(orderResponse);
 
 			await orderController().addNewOrder(req, res);
 			expect(useCaseCreate).toHaveBeenCalledTimes(1);
+			expect(useCaseCreate).toHaveBeenCalledWith("1", "customer", 110, 1, [{"productId": 1, "productQuantity": 2}], expect.any(String), expect.any(String));
 			expect(addPayment).toHaveBeenCalledTimes(1);
 			expect(res.status).toHaveBeenCalledWith(200);
 			expect(res.json).toHaveBeenCalledWith({ order: orderResponse, qrcode: 'qrcode_url'});
+		});
+
+		it("should not add new order when product information is not found", async () => {
+			addPayment.mockResolvedValue('qrcode_url');
+			getAllStatus.mockResolvedValue([{ id: 2, description: 'payment_required' }]);
+			useCaseProductById.mockRejectedValueOnce(new Error('Error'));
+
+			await orderController().addNewOrder(req, res);
+			expect(useCaseCreate).not.toHaveBeenCalled();
+			expect(res.status).toHaveBeenCalledWith(400);
+			expect(res.json).toHaveBeenCalledWith("Product not found Error");
 		});
 
 		it("should handle error", async () => {

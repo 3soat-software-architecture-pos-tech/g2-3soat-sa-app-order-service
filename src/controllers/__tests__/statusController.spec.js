@@ -5,6 +5,13 @@ import useCaseFindById from '../../use_cases/status/findById.js';
 import useCaseDelete from '../../use_cases/status/deleteById.js'
 import useCaseUpdateById from '../../use_cases/status/updateById.js';
 
+jest.mock('../../config/dbConnectMysql.js', () => ({
+	beginTransaction: jest.fn(),
+	query: jest.fn(),
+	rollback: jest.fn(),
+	commit: jest.fn(),
+}));
+
 jest.mock('../../use_cases/status/add.js');
 jest.mock('../../use_cases/status/getAll.js');
 jest.mock('../../use_cases/status/findById.js');

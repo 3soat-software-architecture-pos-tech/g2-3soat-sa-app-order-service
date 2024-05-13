@@ -6,6 +6,7 @@ import useCaseGetAllOrders from '../use_cases/order/getAll.js';
 import useCaseStatusAll from '../use_cases/status/getAll.js';
 import addPayment from '../use_cases/payment/addMercadoPago.js';
 import useCaseUpdateStatusById from '../use_cases/order/updateStatusById.js';
+import useCaseProductById from '../use_cases/product/getById.js';
 import { webhookURL } from '../config/webhookConfig.js';
 
 const getInProgressList = (order) => {
@@ -23,22 +24,31 @@ export default function orderController() {
 
 		// vincular automaticamente o status
 		const statusList = await useCaseStatusAll();
-		const initialStatus = statusList.find(status => status.description === 'pending' || status.description === 'payment_required');
+		const initialStatus = statusList?.find(status => status.description === 'pending' || status.description === 'payment_required');
 
 		// atualiza produtos a partir de orderProducts
 		const orderProductsList = await Promise.all(orderProductsDescription.map(async (product) => {
-			// TODO: buscar detalhes do produto
-			const productDetails = {} // await useCaseGetProductById(product.productId);
+			// TODO: buscar detalhes do produto // await useCaseGetProductById(product.productId);
+			let productDetails;
+			try {
+				productDetails = await useCaseProductById(product.productId);
+			} catch (error) {
+				return error.message;
+			}
 			const { productQuantity } = product;
 
 			return {
 				productId: product.productId,
-				productPrice: productDetails.price,
+				productPrice: productDetails?.price,
 				productQuantity: productQuantity,
-				productTotalPrice: productDetails.price * productQuantity,
-				productName: productDetails.productName
+				productTotalPrice: productDetails?.price * productQuantity,
+				productName: productDetails?.productName
 			}
 		}));
+
+		if (orderProductsList.some(product => typeof product === 'string')) {
+			return res.status(400).json(`Product not found ${orderProductsList.filter(product => typeof product === 'string')}`);
+		}
 
 		//calcular o total do pedido
 		const totalOrderPrice = orderProductsList.reduce((total, product) => total + product.productTotalPrice, 0);
