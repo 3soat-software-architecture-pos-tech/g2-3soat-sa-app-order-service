@@ -5,7 +5,7 @@ import useCaseDelete from '../../use_cases/order/deleteById.js'
 import useCaseFindById from '../../use_cases/order/findById.js'
 import getAllStatus from '../../use_cases/status/getAll.js'
 import useCaseGetAllOrders from '../../use_cases/order/getAll.js'
-import addPayment from '../../use_cases/payment/addMercadoPago.js';
+import addPayment from '../../use_cases/payment/addPayment.js';
 import useCaseProductById from '../../use_cases/product/getById.js';
 
 jest.mock('../../config/dbConnectMysql.js', () => ({
@@ -21,7 +21,7 @@ jest.mock('../../use_cases/order/deleteById.js');
 jest.mock('../../use_cases/order/findById.js');
 jest.mock('../../use_cases/status/getAll.js');
 jest.mock('../../use_cases/order/getAll.js');
-jest.mock('../../use_cases/payment/addMercadoPago.js');
+jest.mock('../../use_cases/payment/addPayment.js');
 jest.mock('../../use_cases/product/getById.js');
 
 const orderResponse = {

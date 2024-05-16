@@ -4,10 +4,9 @@ import useCaseDelete from '../use_cases/order/deleteById.js'
 import useCaseupdateById from '../use_cases/order/updateById.js';
 import useCaseGetAllOrders from '../use_cases/order/getAll.js';
 import useCaseStatusAll from '../use_cases/status/getAll.js';
-import addPayment from '../use_cases/payment/addMercadoPago.js';
+import addPayment from '../use_cases/payment/addPayment.js';
 import useCaseUpdateStatusById from '../use_cases/order/updateStatusById.js';
 import useCaseProductById from '../use_cases/product/getById.js';
-import { webhookURL } from '../config/webhookConfig.js';
 
 const getInProgressList = (order) => {
 	const statusDoneList = order.filter(order => order.orderStatus?.description === 'done').sort((a, b) => a.createdAt - b.createdAt);
@@ -42,7 +41,10 @@ export default function orderController() {
 				productPrice: productDetails?.price,
 				productQuantity: productQuantity,
 				productTotalPrice: productDetails?.price * productQuantity,
-				productName: productDetails?.productName
+				title: productDetails?.productName,
+				description: productDetails?.productName, //description do produto
+				category: productDetails?.categoryDescription, //categoria do produto
+				sku_number: productDetails?.id, //sku do produto
 			}
 		}));
 
@@ -60,7 +62,10 @@ export default function orderController() {
 				unit_price: parseFloat(product.productPrice),
 				quantity: product.productQuantity,
 				total_amount: product.productTotalPrice,
-				unit_measure: 'unit'
+				unit_measure: 'unit',
+				sku_number: product.sku_number,
+				category: product.category,
+				description: product.description
 			}
 		});
 
@@ -76,11 +81,9 @@ export default function orderController() {
 			);
 
 			const data = {
-				title: `Order ${orderNumber}-${customer}`,
 				description: `Purchase description ${orderNumber}`,
-				external_reference: order?.orderId?.toString(), // Número interno do Pedido dentro da sua loja
+				order: orderNumber,
 				items: itemsList,
-				notification_url: webhookURL,
 				total_amount: totalOrderPrice
 			};
 
