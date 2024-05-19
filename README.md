@@ -31,7 +31,7 @@ $ docker push carlostofoli/tech-challenge-fase3:latest
 ```
 ou `make update-image`
 
-## Setup testes
+### Setup testes
 
 Para rodar todos os testes localmente, você pode executar o comando
 ```bash
@@ -47,7 +47,7 @@ $ npm run test <caminho-do-teste>
 
 ### Desenho da arquitetura de microsserviços
 
-   ![tech_challenge_fase2](https://github.com/xCTbr/pos-tech-soat3-tech-challenge/assets/27281151/582c5bd6-6c49-43dd-8f38-5c96c3c8caec)
+   ![tech_challenge_fase2](https://github.dev/3soat-software-architecture-pos-tech/g2-3soat-sa-app-order-service/tree/update-readme)
 
 ### Collection:
 
