@@ -31,11 +31,21 @@ $ docker push carlostofoli/tech-challenge-fase3:latest
 ```
 ou `make update-image`
 
+## Setup testes
 
+Para rodar todos os testes localmente, você pode executar o comando
+```bash
+$ npm run tests
+```
 
-## Tech challenge Fase 2
+Para rodar um teste específico, você pode executar o comando
+```bash
+$ npm run test <caminho-do-teste>
+```
 
-### Desenho da arquitetura
+## Tech challenge Fase 4
+
+### Desenho da arquitetura de microsserviços
 
    ![tech_challenge_fase2](https://github.com/xCTbr/pos-tech-soat3-tech-challenge/assets/27281151/582c5bd6-6c49-43dd-8f38-5c96c3c8caec)
 
@@ -47,12 +57,12 @@ ou `make update-image`
 
 #### API's:
 
-Nosso banco de dados já está populado, no entanto, caso deseje criar novos registros, seguir a ordem indicada abaixo.
+Nosso banco de dados já está populado, no entanto, caso deseje criar novos registros:
+- os produtos a serem adicionados no pedido precisam existir na API produtos;
+- os clientes relacionados a pedidos precisam existir na api de usuarios / clientes
 
-- Criar cliente
-- Criar categoria
-- Criar produto associado à categoria
 - Criar pedido associado à cliente e produto
+
 
 
 ## Team
