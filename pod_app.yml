@@ -28,7 +28,7 @@ spec:
               cpu: "0.5"  # Defina os limites de CPU conforme necessário
               memory: "256Mi"  # Defina os limites de memória conforme necessário
             requests:
-              cpu: "0.25"  # Defina as solicitações de CPU conforme necessário
+              cpu: "0.30"  # Defina as solicitações de CPU conforme necessário
               memory: "256Mi"  # Defina as solicitações de memória conforme necessário
 ---
 apiVersion: v1
