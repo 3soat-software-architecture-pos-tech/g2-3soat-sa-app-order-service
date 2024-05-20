@@ -3,7 +3,7 @@ name: Build and Push Docker Image to ECR
 on:
   pull_request:
     types:
-      - closed
+      - created
     branches:
       - main
 
