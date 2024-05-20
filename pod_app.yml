@@ -22,7 +22,7 @@ spec:
         - name: app
           image: 767397818445.dkr.ecr.us-east-1.amazonaws.com/app:latest
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           resources:
             limits:
               cpu: "0.5"  # Defina os limites de CPU conforme necessário
