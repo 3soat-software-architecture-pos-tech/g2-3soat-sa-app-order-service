@@ -2,7 +2,7 @@
 import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } from "@aws-sdk/client-sqs";
 import AWS from 'aws-sdk';
 
-const QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/774598510677/fila-de-pedidos';
+const QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/767397818445/fila-de-pagamentos';
 // Set up AWS credentials and region if not already configured
 AWS.config.update({
 	region: process.env.AWS_REGION,
@@ -38,10 +38,13 @@ export default async function receiveMessages() {
 					// const order = JSON.parse(message.Body);
 					// Call the payment service to create a new payment
 					// createNewPayment(order);
-					if (message.Body === 'message 1') {
-						deleteMessage(message.ReceiptHandle);
-						console.log('approved');
-					}
+					data.Messages.forEach(message => {
+						console.log("Message:", message.Body);
+						// do something with the message
+						// Delete the message from the queue once processed
+						// deleteMessage(message);
+					});
+					receiveMessages();
 				}
 
 				// Delete the message from the queue once processed
@@ -49,6 +52,7 @@ export default async function receiveMessages() {
 			});
 		} else {
 			console.log("No messages available");
+			receiveMessages();
 		}
 	} catch (err) {
 		console.error("Error receiving messages:", err);
@@ -65,7 +69,7 @@ export async function deleteMessage(receiptHandle) {
 		const deleteCommand = new DeleteMessageCommand(deleteParams);
 		await sqsClient.send(deleteCommand);
 		console.log("Message deleted successfully");
-		receiveMessages();
+		// receiveMessages();
 	} catch (err) {
 		console.error("Error deleting message:", err);
 	}
