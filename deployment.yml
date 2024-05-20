@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-deployment
+  name: order-service-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: order-service
   template:
     metadata:
       labels:
-        app: app
+        app: order-service
     spec:
       containers:
-        - name: app
+        - name: order-service
           image: carlostofoli/tech-challenge-fase3:latest
           ports:
             - containerPort: 3000
