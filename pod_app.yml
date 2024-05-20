@@ -1,25 +1,25 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: app
+  name: order-service
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-deployment
+  name: order-service-deployment
   namespace: app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: order-service
   template:
     metadata:
       labels:
-        app: app
+        app: order-service
     spec:
       containers:
-        - name: app
+        - name: order-service
           image: 767397818445.dkr.ecr.us-east-1.amazonaws.com/app:latest
           ports:
             - containerPort: 8080
@@ -34,11 +34,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app
-  namespace: app
+  name: order-service
+  namespace: order-service
 spec:
   selector:
-    app: app
+    app: order-service
   ports:
     - protocol: TCP
       port: 80
@@ -52,14 +52,14 @@ metadata:
   namespace: app
 spec:
   rules:
-    - host: app-lanchonete.com
+    - host: order-service.com
       http:
         paths:
           - pathType: Prefix
             path: "/"
             backend:
               service:
-                name: app
+                name: order-service
                 port:
                   number: 80
                   
