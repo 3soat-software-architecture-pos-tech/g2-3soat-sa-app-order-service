@@ -48,4 +48,3 @@ jobs:
 
       - name: Apply Kubernetes app
         run: kubectl apply -f pod_app.yml
-        
