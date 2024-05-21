@@ -55,6 +55,7 @@ Nosso banco de dados já está populado, no entanto, caso deseje criar novos reg
 ### Cobertura de testes
 
 jest coverage
+
 <img width="699" alt="Screenshot 2024-05-20 at 10 32 31 PM" src="https://github.com/3soat-software-architecture-pos-tech/g2-3soat-sa-app-order-service/assets/23316988/fb9e7437-f8af-4c7c-b0d2-78065c9620a4">
 
 
