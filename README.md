@@ -47,7 +47,7 @@ $ npm run test <caminho-do-teste>
 
 ### Desenho da arquitetura de microsserviços
 
-   ![tech_challenge_fase2](https://github.dev/3soat-software-architecture-pos-tech/g2-3soat-sa-app-order-service/tree/update-readme)
+   ![TECH CHALLENGE](https://github.com/3soat-software-architecture-pos-tech/g2-3soat-sa-app-order-service/assets/23316988/fda2a4d0-a26a-47da-bae3-ff784e12b1b3)
 
 ### Collection:
 
