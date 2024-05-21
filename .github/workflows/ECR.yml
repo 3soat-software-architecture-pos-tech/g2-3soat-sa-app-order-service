@@ -44,8 +44,6 @@ jobs:
       - name: Aplly kubernetes hpa
         run: kubectl apply -f hpa.yml
 
-      - name: Aplly kubernetes service
-        run: kubectl apply -f service.yml
 
       - name: Apply Kubernetes app
         run: kubectl apply -f pod_app.yml
