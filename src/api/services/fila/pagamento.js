@@ -1,5 +1,6 @@
 // const { SQSClient, ReceiveMessageCommand, AWS } = require("@aws-sdk/client-sqs");
 import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } from "@aws-sdk/client-sqs";
+import updateStatusById from "../../../controllers/orderController.js";
 import AWS from 'aws-sdk';
 
 const QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/767397818445/fila-de-pagamentos';
@@ -21,34 +22,19 @@ const params = {
 	MaxNumberOfMessages: 10 // Maximum number of messages to retrieve
 };
 
-// Function to receive and process messages
 export default async function receiveMessages() {
 	try {
-		// Send receiveMessage command
 		const data = await sqsClient.send(new ReceiveMessageCommand(params));
 
-		// Process received messages
 		if (data.Messages) {
 			data.Messages.forEach(message => {
-				console.log("Received message:", message.Body);
+				const orderToUpdate = message?.Body?.external_reference;
 
-				// TODO: Process the message according to your application logic
-				if (message.Body !== "No messages available") {
-					console.log('Send to process payment ', message.Body);
-					// const order = JSON.parse(message.Body);
-					// Call the payment service to create a new payment
-					// createNewPayment(order);
-					data.Messages.forEach(message => {
-						console.log("Message:", message.Body);
-						// do something with the message
-						// Delete the message from the queue once processed
-						// deleteMessage(message);
-					});
+				if (orderToUpdate) {
+					updateStatusById(orderToUpdate, 'payment_received')
+					deleteMessage(message);
 					receiveMessages();
 				}
-
-				// Delete the message from the queue once processed
-				// deleteMessage(message.ReceiptHandle);
 			});
 		} else {
 			console.log("No messages available");
@@ -69,7 +55,7 @@ export async function deleteMessage(receiptHandle) {
 		const deleteCommand = new DeleteMessageCommand(deleteParams);
 		await sqsClient.send(deleteCommand);
 		console.log("Message deleted successfully");
-		// receiveMessages();
+		receiveMessages();
 	} catch (err) {
 		console.error("Error deleting message:", err);
 	}
