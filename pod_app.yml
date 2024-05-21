@@ -25,11 +25,11 @@ spec:
             - containerPort: 8080
           resources:
             limits:
-              cpu: "0.5"  # Defina os limites de CPU conforme necessário
-              memory: "256Mi"  # Defina os limites de memória conforme necessário
+              cpu: "1"  # Defina os limites de CPU conforme necessário
+              memory: "2048Mi"  # Defina os limites de memória conforme necessário
             requests:
-              cpu: "0.30"  # Defina as solicitações de CPU conforme necessário
-              memory: "256Mi"  # Defina as solicitações de memória conforme necessário
+              cpu: "1"  # Defina as solicitações de CPU conforme necessário
+              memory: "2048Mi"  # Defina as solicitações de memória conforme necessário
 ---
 apiVersion: v1
 kind: Service
