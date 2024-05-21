@@ -2,7 +2,7 @@
 
 API Sistema de pedidos 'Totem de autoatendimento'
 
-## Setup
+## Setup Local
 
 Para configurar a aplicação em ambiente local
 
@@ -58,6 +58,13 @@ jest coverage
 
 <img width="699" alt="Screenshot 2024-05-20 at 10 32 31 PM" src="https://github.com/3soat-software-architecture-pos-tech/g2-3soat-sa-app-order-service/assets/23316988/fb9e7437-f8af-4c7c-b0d2-78065c9620a4">
 
+## Materias de Referência
+- Alura: [Node js testes unitários e de integração](https://cursos.alura.com.br/course/nodejs-testes-unitarios-integracao)
+- Alura: [Node js API Rest com Express e MongoDB](https://cursos.alura.com.br/course/nodejs-api-rest-express-mongodb)
+- Alura: [O que é Behavior-Driven Development (BDD)](https://cursos.alura.com.br/extra/alura-mais/o-que-e-behavior-driven-development-bdd--c284)
+- Jest: [Documentation](https://jestjs.io/)
+- ESLint : [Documentation](https://pt-br.eslint.org/)
+- Sonar Cloud: [Documentation](https://docs.sonarsource.com/sonarcloud/)
 
 ## Team
  - Turma: 3SOAT
