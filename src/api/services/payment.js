@@ -1,6 +1,6 @@
 import axiosClient from "../apiClient.js";
 
-const baseURL = `https://localhost:3000/api/payment`;
+const baseURL = `http://localhost:3000/api/payment`;
 const headers = {
 	'Content-Type': 'application/json',
 	'Authorization': `Bearer ${process.env.TOKEN_VENDEDOR_MP}`
