@@ -24,9 +24,9 @@ export default function orderController() {
 
 		// vincular automaticamente o status
 		const statusList = await useCaseStatusAll();
-		const initialStatus = statusList?.find(status => status.description === STATUS.RECEIVED);
+		const initialStatus = statusList?.find(status => status.statusName === STATUS.RECEIVED);
 		// atualiza produtos a partir de orderProducts
-		const orderProductsList = await Promise.all(orderProductsDescription.map(async (product) => {
+		const orderProductsList = orderProductsDescription ? await Promise.all(orderProductsDescription?.map(async (product) => {
 			// TODO: buscar detalhes do produto // await useCaseGetProductById(product.productId);
 			let productDetails;
 			try {
@@ -46,7 +46,7 @@ export default function orderController() {
 				category: productDetails?.categoryDescription, //categoria do produto
 				sku_number: productDetails?.id, //sku do produto
 			}
-		}));
+		})) : [];
 
 		if (orderProductsList.some(product => typeof product === 'string')) {
 			return res.status(400).json(`Product not found ${orderProductsList.filter(product => typeof product === 'string')}`);
@@ -177,9 +177,9 @@ export default function orderController() {
 	};
 
 	const updateOrderStatus = async (message) => {
-		const { id, orderStatus } = message;
+		const { id, statusOrder } = message;
 		const statusList = await useCaseStatusAll();
-		const statusToUpdate = statusList?.find(status => status.description === orderStatus);
+		const statusToUpdate = statusList?.find(status => status.statusName === statusOrder);
 
 		if (!statusToUpdate) return 'Status not found';
  		try {
@@ -190,15 +190,24 @@ export default function orderController() {
 		}
 	};
 
+	const getOrder = async (id) => {
+ 		try {
+			const result = await useCasefindById(id);
+			return result;
+		} catch (error) {
+			return error.message;
+		}
+	};
+
 	//TODO conferir o corpo da mensagem que vem da fila de PAGAMENTO concluido
 	const sendToPay = async (message) => {
-		const orderId = message.idOrder;
+		const { id } = message;
 		try {
-			const orderData = await useCasefindById(orderId);
+			const orderData = await useCasefindById(id);
 			console.log('result sendToPay ', orderData);
 			const { orderNumber, orderProductsDescription, totalOrderPrice } = orderData;
 
-			const orderProductsList = await Promise.all(orderProductsDescription.map(async (product) => {
+			const orderProductsList = orderProductsDescription ? await Promise.all(orderProductsDescription.map(async (product) => {
 				let productDetails;
 				try {
 					productDetails = await useCaseProductById(product.productId);
@@ -217,7 +226,7 @@ export default function orderController() {
 					category: productDetails?.categoryDescription, //categoria do produto
 					sku_number: productDetails?.id, //sku do produto
 				}
-			}));
+			})) : [];
 
 			const itemsList = orderProductsList.map(product => {
 				return {
@@ -255,6 +264,7 @@ export default function orderController() {
 		deleteOrderById,
 		updateStatusById,
 		sendToPay,
-		updateOrderStatus
+		updateOrderStatus,
+		getOrder
 	};
 }

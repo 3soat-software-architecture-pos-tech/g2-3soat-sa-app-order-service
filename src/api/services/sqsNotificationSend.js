@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid'
 
 export default function sqsNotificationSend(queueUrl, messageBody) {
 	console.log('sqsNotificationSend queueUrl', queueUrl);
@@ -17,7 +18,7 @@ export default function sqsNotificationSend(queueUrl, messageBody) {
 		QueueUrl: queueUrl,
 		MessageBody: messageBody,
 		MessageGroupId: 'myGroup1',
-  	MessageDeduplicationId: 'unique-message-id',
+  	MessageDeduplicationId: uuidv4() // Gera um ID de deduplicação único,
 	};
 
 	sqs.sendMessage(params, (err, data) => {
