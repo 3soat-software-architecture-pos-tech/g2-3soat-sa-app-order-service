@@ -1,20 +1,21 @@
 // const { SQSClient, ReceiveMessageCommand, AWS } = require("@aws-sdk/client-sqs");
-import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } from "@aws-sdk/client-sqs";
 import updateStatusById from "../../../controllers/orderController.js";
 import AWS from 'aws-sdk';
 
-const QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/767397818445/fila-de-pagamentos';
+// const QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/767397818445/fila-de-pagamentos';
+const QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/029390206697/teste-pagamento';
 // Set up AWS credentials and region if not already configured
 AWS.config.update({
 	region: process.env.AWS_REGION,
 	credentials: {
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-		secretAccessKey: process.env.AWS_SECRET_KEY
+		secretAccessKey: process.env.AWS_SECRET_KEY,
+		sessionToken: process.env.AWS_SECTION_TOKEN,
 	}
 });
 
 // Create SQS client
-const sqsClient = new SQSClient({ region: process.env.AWS_REGION });
+const sqs = new AWS.SQS();
 
 // Configure receiveMessage command parameters
 const params = {
@@ -24,7 +25,7 @@ const params = {
 
 export default async function receiveMessages() {
 	try {
-		const data = await sqsClient.send(new ReceiveMessageCommand(params));
+		const data = await sqs.receiveMessage(params).promise();
 
 		if (data.Messages) {
 			data.Messages.forEach(message => {
@@ -52,10 +53,9 @@ export async function deleteMessage(receiptHandle) {
 			QueueUrl: QUEUE_URL,
 			ReceiptHandle: receiptHandle
 		};
-		const deleteCommand = new DeleteMessageCommand(deleteParams);
-		await sqsClient.send(deleteCommand);
+		sqs.deleteMessage(deleteParams)
 		console.log("Message deleted successfully");
-		receiveMessages();
+		// receiveMessages();
 	} catch (err) {
 		console.error("Error deleting message:", err);
 	}

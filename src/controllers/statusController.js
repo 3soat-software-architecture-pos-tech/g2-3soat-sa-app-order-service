@@ -4,6 +4,16 @@ import useCaseFindById from '../use_cases/status/findById.js';
 import useCaseDelete from '../use_cases/status/deleteById.js'
 import useCaseUpdateById from '../use_cases/status/updateById.js';
 
+export const STATUS = {
+	RECEIVED: 'RECEIVED', //produto foi recebido
+	PROCESSING: 'PROCESSING', //produto enviado para separacao sujeito a disponibilidade em estoque
+	PAYMENT_REQUIRED: 'PAYMENT_REQUIRED', // produto reservado e enviado para fila de pagamento
+	PENDING: 'PENDING', // produto pago, enviado para preparacao
+	IN_PROGRESS: 'IN_PROGRESS', // produto sendo preparado
+	DONE: 'DONE', // produto preparado e enviado para entrega
+	CANCELED: 'CANCELED', // produto cancelado
+};
+
 export default function statusController() {
 
 	const addNewStatus = async (req, res) => {

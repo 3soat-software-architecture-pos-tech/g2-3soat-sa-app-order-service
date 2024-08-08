@@ -52,11 +52,13 @@ Nosso banco de dados já está populado, no entanto, caso deseje criar novos reg
 
 - Criar pedido associado à cliente e produto
 
-### Cobertura de testes
+### Relatório OWASP ZAP
 
-jest coverage
+[Pre relatório](documentacao/reports/ZAP_Scanning_Report-Pre.pdf)
+[Pos relatório](documentacao/reports/ZAP_Scanning_Report-Pre.pdf)
 
-<img width="699" alt="Screenshot 2024-05-20 at 10 32 31 PM" src="https://github.com/3soat-software-architecture-pos-tech/g2-3soat-sa-app-order-service/assets/23316988/fb9e7437-f8af-4c7c-b0d2-78065c9620a4">
+
+
 
 ## Materias de Referência
 - Alura: [Node js testes unitários e de integração](https://cursos.alura.com.br/course/nodejs-testes-unitarios-integracao)
