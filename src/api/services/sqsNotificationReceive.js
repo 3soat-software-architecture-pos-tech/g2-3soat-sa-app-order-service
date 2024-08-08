@@ -70,7 +70,7 @@ export default async function sqsNotificationReceive(queueUrl, persistFunctionCa
 						}
 						persistFunctionCallback(message);
 						const order = await orderController().getOrder(message.id);
-						sqsNotificationSend(process.env.AWS_QUEUE_URL_NOTIFICA_CLIENTE, JSON.stringify({ ...message, customer: order[0].customer_id }));
+						sqsNotificationSend(process.env.AWS_QUEUE_URL_NOTIFICA_CLIENTE, JSON.stringify({ ...message, customer_id: order[0].customer_id }));
 
 						const deleteParams = {
 							QueueUrl: queueUrl,
