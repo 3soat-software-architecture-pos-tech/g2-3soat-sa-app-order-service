@@ -52,6 +52,13 @@ Nosso banco de dados já está populado, no entanto, caso deseje criar novos reg
 
 - Criar pedido associado à cliente e produto
 
+Miro Documentação [Documentação](https://miro.com/app/board/uXjVNyWqWyk=/)
+
+Justificativa para o padrão SAGA
+
+Foi utilizado o padrão Saga coreografado com ações compensatórias para realizar comunição entre os serviços de modo que seja possível trocar informações entre os serviços de maneira simples, eficaz e direta sem nenhuma dependência além das proprias filas para que ambos possam funcionar independentemente. Em casos onde as notificações processadas não tenham o resultado esperado durante a execução das tarefas, ações compensatórias predefinidas são disparadas para notificar que o evento não ocorreu para que se possa desfazer as alterações realizadas.
+
+
 ### Relatório OWASP ZAP
 
 [Pre relatório](documentacao/reports/ZAP_Scanning_Report-Pre.pdf)
