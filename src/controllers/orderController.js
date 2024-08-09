@@ -86,7 +86,7 @@ export default function orderController() {
 				productIds: itemsList.map(product => {
 					return {
 						id: product.sku_number,
-						quantity: product.quantity
+						qtd: product.quantity
 					}
 				})
 			}
