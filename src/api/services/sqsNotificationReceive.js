@@ -9,7 +9,7 @@ export default async function sqsNotificationReceive(queueUrl, persistFunctionCa
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 		secretAccessKey: process.env.AWS_SECRET_KEY,
 		region: process.env.AWS_REGION,
-		// sessionToken: process.env.AWS_SECTION_TOKEN,
+		sessionToken: process.env.AWS_SECTION_TOKEN,
 	});
 	const sqs = new AWS.SQS({});
 	const params = {
@@ -51,9 +51,12 @@ export default async function sqsNotificationReceive(queueUrl, persistFunctionCa
 							statusOrder: STATUS.CANCELED,
 						}
 						const order = await orderController().getOrder(message.id);
-
 						persistFunctionCallback(message);
-						sqsNotificationSend(process.env.AWS_QUEUE_URL_NOTIFICA_CLIENTE, JSON.stringify({ ...message, customer: order[0].customer_id }));
+						if(order) {
+							sqsNotificationSend(process.env.AWS_QUEUE_URL_NOTIFICA_CLIENTE, JSON.stringify({ ...message, customer: order[0].customer_id }));
+						} else {
+							console.warn('Order not found');
+						}
 
 						const deleteParams = {
 							QueueUrl: queueUrl,
@@ -70,8 +73,32 @@ export default async function sqsNotificationReceive(queueUrl, persistFunctionCa
 						}
 						persistFunctionCallback(message);
 						const order = await orderController().getOrder(message.id);
-						sqsNotificationSend(process.env.AWS_QUEUE_URL_NOTIFICA_CLIENTE, JSON.stringify({ ...message, customer: order[0].customer_id }));
+						if(order) {
+							sqsNotificationSend(process.env.AWS_QUEUE_URL_NOTIFICA_CLIENTE, JSON.stringify({ ...message, customer_id: order[0].customer_id }));
+						} else {
+							console.warn('Order not found');
+						}
+						const deleteParams = {
+							QueueUrl: queueUrl,
+							ReceiptHandle: receiptHandle
+						};
+						deleteMessage(deleteParams);
+					}
+					if(action === QUEUE_ACTION.PAYMENT_ERROR){
+						console.log(`action ${action}`);
+						const orderToUpdate = messageBody?.external_reference
+						const message = {
+							id: orderToUpdate,
+							statusOrder: STATUS.CANCELED,
+						}
 
+						persistFunctionCallback(message);
+						const order = await orderController().getOrder(message.id);
+						if(order) {
+							sqsNotificationSend(process.env.AWS_QUEUE_URL_NOTIFICA_CLIENTE, JSON.stringify({ ...message, customer_id: order[0].customer_id }));
+						} else {
+							console.warn('Order not found');
+						}
 						const deleteParams = {
 							QueueUrl: queueUrl,
 							ReceiptHandle: receiptHandle
@@ -100,7 +127,7 @@ const deleteMessage = async (deleteParams) => {
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 		secretAccessKey: process.env.AWS_SECRET_KEY,
 		region: process.env.AWS_REGION,
-		// sessionToken: process.env.AWS_SECTION_TOKEN,
+		sessionToken: process.env.AWS_SECTION_TOKEN,
 	});
 	const sqs = new AWS.SQS({});
 	sqs.deleteMessage(deleteParams, (err, data) => {
