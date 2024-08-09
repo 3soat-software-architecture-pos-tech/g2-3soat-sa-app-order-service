@@ -15,7 +15,7 @@ export default function orderRepositoryMongoDB() {
 						return db.rollback(() => reject(error));
 					}
 					const orderId = result.insertId;
-					const insertProductQuery = "INSERT INTO orderProductsdescription (orderId, productId, productQuantity) VALUES ?";
+					const insertProductQuery = "INSERT INTO orderproductsdescription (orderId, productId, productQuantity) VALUES ?";
 					db.query(insertProductQuery, [orderProducts.map(product => [orderId, ...product])], (productError) => {
 						if (productError) {
 							return db.rollback(() => reject(productError));
