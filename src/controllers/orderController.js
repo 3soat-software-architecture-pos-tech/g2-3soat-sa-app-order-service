@@ -81,7 +81,7 @@ export default function orderController() {
 			);
 
 			const messageBody = {
-				idOrder: order.orderId,
+				idorder: order.orderId.toString(),
 				obs: 'reservar estoque',
 				productIds: itemsList.map(product => {
 					return {
